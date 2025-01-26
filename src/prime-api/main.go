@@ -10,6 +10,7 @@ import (
 func main() {
 	http.HandleFunc("/is-prime/", isPrimeHandler)
 	http.HandleFunc("/next-prime/", nextPrimeHandler)
+	http.HandleFunc("/health-check", healthCheckHandler)
 
 	port := ":8080"
 	fmt.Printf("Starting server on port %s...\n", port)
