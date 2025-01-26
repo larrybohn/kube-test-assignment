@@ -1,0 +1,19 @@
+FROM golang:1.23 AS build-stage
+
+COPY go.mod ./
+COPY *.go ./
+
+RUN CGO_ENABLED=0 GOOS=linux go build -o /prime-api
+
+
+FROM gcr.io/distroless/base-debian11 AS runtime
+
+WORKDIR /
+
+COPY --from=build-stage /prime-api /prime-api
+
+EXPOSE 8080
+
+USER nonroot:nonroot
+
+ENTRYPOINT ["/prime-api"]
