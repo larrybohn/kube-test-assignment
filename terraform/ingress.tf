@@ -11,21 +11,6 @@ resource "helm_release" "nginx_ingress" {
   chart      = "nginx-ingress"
   
   set {
-    name  = "controller.service.externalPorts[0].port"
-    value = "80"
-  }
-
-  set {
-    name  = "controller.service.externalPorts[1].port"
-    value = "443"
-  }
-
-  set {
-    name  = "controller.service.externalPorts[2].port"
-    value = "8989"
-  }
-
-  set {
     name = "controller.service.externalTrafficPolicy"
     value = "Local"
   }

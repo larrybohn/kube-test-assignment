@@ -8,8 +8,8 @@ variables:
   imageName: 'prime-api'
   acrName: 'andreikubetestassignmentacr.azurecr.io'
   aksCluster: 'aks-cluster'
-  resourceGroup: 'aks-rg'
-  kubernetesNamespace: 'default'
+  resourceGroup: 'cluster'
+  subscriptionId: 'e07f1145-7d1f-40d9-9d15-eda1488aef3a'
 
 steps:
 - script: |
@@ -25,6 +25,15 @@ steps:
     sudo chmod 777 /var/run/docker.sock
   displayName: Install Docker
 
+- script: |
+    sudo apt-get -y install zip
+  displayName: Install zip
+
+- task: HelmInstaller@1
+  displayName: Install Helm
+  inputs:
+    helmVersionToInstall: 'latest'
+
 - task: Docker@2
   displayName: 'Build and Push Docker Image'
   inputs:
@@ -32,3 +41,41 @@ steps:
     containerRegistry: $(acrName)
     repository: $(imageName)
     dockerfile: './src/prime-api/Dockerfile'
+    tags: $(Build.BuildId)
+
+- task: Kubernetes@1
+  displayName: Login to Kubernetes
+  inputs:
+    connectionType: 'Azure Resource Manager'
+    azureSubscriptionEndpoint: $(subscriptionId)
+    azureResourceGroup: $(resourceGroup)
+    kubernetesCluster: $(aksCluster)
+    command: login
+
+- task: HelmDeploy@1
+  displayName: 'Deploy Helm chart'
+  inputs:
+    azureSubscription: $(subscriptionId)
+    azureResourceGroup: $(resourceGroup)
+    kubernetesCluster: $(aksCluster)
+    namespace: default
+    command: 'upgrade'
+    releaseName: prime-api
+    chartType: 'FilePath'
+    chartPath: ./charts/prime-api
+    overrideValues: |
+      image.tag=$(Build.BuildId)
+    waitForCompletion: true
+    install: true
+
+- task: Kubernetes@1
+  displayName: 'Check running pods'
+  inputs:
+    connectionType: 'Azure Resource Manager'
+    azureSubscriptionEndpoint: $(subscriptionId)
+    azureResourceGroup: $(resourceGroup)
+    kubernetesCluster: $(aksCluster)
+    command: 'get'
+    arguments: 'pods'
+
+
