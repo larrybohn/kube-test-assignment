@@ -4,13 +4,21 @@ trigger:
 pool:
   name: vmss
 
+variables:
+  imageName: 'prime-api'
+  acrName: 'andreikubetestassignmentacr.azurecr.io'
+  aksCluster: 'aks-cluster'
+  resourceGroup: 'aks-rg'
+  kubernetesNamespace: 'default'
+
 steps:
-- task: GoTool@0
+- script: curl -fsSL https://get.docker.com -o get-docker.sh && sh get-docker.sh && sudo chmod 777 /var/run/docker.sock
+  displayName: Install Docker
+
+- task: Docker@2
+  displayName: 'Build and Push Docker Image'
   inputs:
-    version: '1.23.5'
-
-- script: |
-    cd prime-api
-    go build -o prime-api .
-  displayName: 'Go Build'
-
+    command: 'buildAndPush'
+    containerRegistry: $(acrName)
+    repository: $(imageName)
+    dockerfile: './src/prime-api/Dockerfile'
