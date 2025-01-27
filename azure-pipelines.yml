@@ -34,6 +34,14 @@ steps:
   inputs:
     helmVersionToInstall: 'latest'
 
+- script: curl -sL https://aka.ms/InstallAzureCLIDeb | sudo bash
+  displayName: Install Azure CLI
+
+- script: |
+    sudo apt-get update
+    sudo apt-get install -y netcat
+  displayName: 'Install netcat'
+
 - task: Docker@2
   displayName: 'Build and Push Docker Image'
   inputs:
@@ -65,24 +73,10 @@ steps:
     chartPath: ./charts/prime-api
     overrideValues: |
       image.tag=$(Build.BuildId)
-    waitForCompletion: true
+    waitForCompletion: false
     install: true
 
-- task: AzureCLI@2
-  displayName: 'Wait until pod is running'
-  inputs:
-    azureSubscription: $(subscriptionId)
-    scriptType: bash
-    scriptLocation: inlineScript
-    inlineScript: |
-      az aks get-credentials --resource-group $(resourceGroup) --name $(aksCluster)
-
-      # Wait for pods to be in the Running state
-      echo "Waiting for pods to be in 'Running' state..."
-      kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=prime-api --timeout=45s
-      if [ $? -eq 0 ]; then
-        echo "Pods are in Running state!"
-      else
-        echo "Pods failed to reach Running state within timeout."
-        exit 1
-      fi
+- script: |
+    chmod +x ./scripts/check-deployment.sh
+    ./scripts/check-deployment.sh
+  displayName: 'Check helm is deployed and port is open'
