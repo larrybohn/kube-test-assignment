@@ -68,14 +68,21 @@ steps:
     waitForCompletion: true
     install: true
 
-- task: Kubernetes@1
-  displayName: 'Check running pods'
+- task: AzureCLI@2
+  displayName: 'Wait until pod is running'
   inputs:
-    connectionType: 'Azure Resource Manager'
-    azureSubscriptionEndpoint: $(subscriptionId)
-    azureResourceGroup: $(resourceGroup)
-    kubernetesCluster: $(aksCluster)
-    command: 'get'
-    arguments: 'pods'
+    azureSubscription: $(subscriptionId)
+    scriptType: bash
+    scriptLocation: inlineScript
+    inlineScript: |
+      az aks get-credentials --resource-group $(resourceGroup) --name $(aksCluster)
 
-
+      # Wait for pods to be in the Running state
+      echo "Waiting for pods to be in 'Running' state..."
+      kubectl wait --for=condition=ready pod -l app.kubernetes.io/name=prime-api --timeout=45s
+      if [ $? -eq 0 ]; then
+        echo "Pods are in Running state!"
+      else
+        echo "Pods failed to reach Running state within timeout."
+        exit 1
+      fi
