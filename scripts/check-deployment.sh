@@ -10,9 +10,11 @@ check_helm_status() {
 }
 
 check_port() {
-    nc -zv prime-api.default.svc.cluster.local 8080 > /dev/null 2>&1
+    nc -zv localhost 8080 > /dev/null 2>&1
     return $?
 }
+
+kubectl port-forward svc/prime-api 8080:8080 &
 
 # Wait loop to check conditions for up to 30 seconds
 while [ $ATTEMPTS -lt 30 ]; do

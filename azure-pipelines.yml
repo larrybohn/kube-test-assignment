@@ -4,12 +4,22 @@ trigger:
 pool:
   name: agentpool
 
+parameters:
+  - name: simulateFailure
+    type: string
+    default: 'false'
+    values:
+      - 'true'
+      - 'false'
+    displayName: "Set to 'true' to hang the app at startup"
+
 variables:
   imageName: 'prime-api'
   acrName: 'andreikubetestassignmentacr.azurecr.io'
   aksCluster: 'aks-cluster'
   resourceGroup: 'cluster'
   subscriptionId: 'e07f1145-7d1f-40d9-9d15-eda1488aef3a'
+  SIMULATE_FAILURE: ${{ parameters.simulateFailure }}
 
 steps:
 
@@ -44,6 +54,7 @@ steps:
     chartPath: ./charts/prime-api
     overrideValues: |
       image.tag=$(Build.BuildId)
+      envVariables.SIMULATE_FAILURE=$(SIMULATE_FAILURE)
     waitForCompletion: false
     install: true
 

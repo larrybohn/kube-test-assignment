@@ -4,6 +4,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"os"
+	"strings"
 	"time"
 )
 
@@ -13,9 +15,15 @@ func main() {
 	http.HandleFunc("/next-prime/", nextPrimeHandler)
 	http.HandleFunc("/healthz", healthCheckHandler)
 
+	//hang indefinitely if requested to simulate failure
+	if strings.ToLower(os.Getenv("SIMULATE_FAILURE")) == "true" {
+		fmt.Println("Hanging forever")
+		time.Sleep(1000 * time.Hour)
+	}
+
 	port := ":8080"
-	fmt.Println("Starting to sleep 90 seconds")
-	time.Sleep(90 * time.Second)
+	fmt.Println("Starting to sleep 15 seconds")
+	time.Sleep(15 * time.Second)
 	fmt.Printf("Starting server on port %s...\n", port)
 	log.Fatal(http.ListenAndServe(port, nil))
 }
