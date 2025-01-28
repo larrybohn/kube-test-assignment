@@ -1,6 +1,7 @@
 #!/bin/bash
 
 RELEASE_NAME=$1
+CLUSTER_ENDPOINT=$2
 
 ATTEMPTS=0
 
@@ -10,7 +11,7 @@ check_helm_status() {
 }
 
 check_app_health() {
-    curl -I -f -s -o /dev/null -w "/healthz: %{http_code}\n" http://kube-test-assignment-cluster.eastus.cloudapp.azure.com/healthz
+    curl -I -f -s -o /dev/null -w "/healthz: %{http_code}\n" http://$CLUSTER_ENDPOINT/healthz
     return $?
 }
 

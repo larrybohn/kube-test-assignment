@@ -73,7 +73,7 @@ steps:
 
 - script: |
     chmod +x ./scripts/check-deployment.sh
-    ./scripts/check-deployment.sh $(appName)
+    ./scripts/check-deployment.sh $(appName) $(clusterEndpoint)
   displayName: 'Check helm is deployed and port is open'
 
 - script: |
