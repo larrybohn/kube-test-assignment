@@ -1,6 +1,6 @@
 #!/bin/bash
 
-RELEASE_NAME="prime-api"
+RELEASE_NAME=$1
 
 ATTEMPTS=0
 
@@ -10,12 +10,11 @@ check_helm_status() {
 }
 
 check_app_health() {
-    curl -I -f -s http://kube-test-assignment-cluster.eastus.cloudapp.azure.com/healthz4
+    curl -I -f -s -o /dev/null -w "/healthz: %{http_code}\n" http://kube-test-assignment-cluster.eastus.cloudapp.azure.com/healthz
     return $?
 }
 
 while [ $ATTEMPTS -lt 30 ]; do
-
     if check_helm_status && check_app_health; then
         echo "Helm status is 'deployed' and /healthz returned OK."
         exit 0
@@ -31,6 +30,6 @@ helm rollback $RELEASE_NAME
 
 echo "Rollback complete"
 
-check_helm_status
+helm history $RELEASE_NAME
 
 exit 1

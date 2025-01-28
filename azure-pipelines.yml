@@ -14,7 +14,7 @@ parameters:
     displayName: "Simulate Failure: set to 'true' to hang the app at startup"
 
 variables:
-  imageName: 'prime-api'
+  appName: 'prime-api'
   acrName: 'andreikubetestassignmentacr.azurecr.io'
   aksCluster: 'aks-cluster'
   resourceGroup: 'cluster'
@@ -29,8 +29,8 @@ steps:
   inputs:
     command: 'build'
     containerRegistry: $(acrName)
-    repository: $(imageName)
-    dockerfile: './src/prime-api/Dockerfile'
+    repository: $(appName)
+    dockerfile: './src/$(appName)/Dockerfile'
     tags: $(tag)
     arguments: --build-arg VERSION=$(tag)
 
@@ -39,7 +39,7 @@ steps:
   inputs:
     command: 'push'
     containerRegistry: $(acrName)
-    repository: $(imageName)
+    repository: $(appName)
     tags: $(tag)
 
 - task: Kubernetes@1
@@ -59,9 +59,9 @@ steps:
     kubernetesCluster: $(aksCluster)
     namespace: default
     command: 'upgrade'
-    releaseName: prime-api
+    releaseName: $(appName)
     chartType: 'FilePath'
-    chartPath: ./charts/prime-api
+    chartPath: ./charts/$(appName)
     overrideValues: |
       image.tag=$(tag)
       envVariables.SIMULATE_FAILURE=$(SIMULATE_FAILURE)
@@ -70,7 +70,7 @@ steps:
 
 - script: |
     chmod +x ./scripts/check-deployment.sh
-    ./scripts/check-deployment.sh
+    ./scripts/check-deployment.sh $(appName)
   displayName: 'Check helm is deployed and port is open'
 
 - script: |
