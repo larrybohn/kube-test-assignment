@@ -12,14 +12,19 @@ fullnameOverride: ""
 ingress:
   enabled: true
   className: "nginx"
-  annotations: {}
+  annotations:
+    cert-manager.io/issuer: "letsencrypt-staging"
+    acme.cert-manager.io/http01-edit-in-place: "true"
   hosts:
     - host: kube-test-assignment-cluster.eastus.cloudapp.azure.com
       paths:
         - path: /
           pathType: ImplementationSpecific
           backend:
-  tls: []
+  tls:
+  - hosts:
+    - kube-test-assignment-cluster.eastus.cloudapp.azure.com
+    secretName: cluster-tls
 
 service:
   type: ClusterIP

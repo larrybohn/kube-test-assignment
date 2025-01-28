@@ -7,7 +7,7 @@ This project contains a simple Go-based API designed to check the primality of a
 
 ## Directory Structure
 
-- **`terraform/`**: Contains all the Terraform files required to provision infrastructure.
+- **`terraform/`**: Contains Terraform files required to provision AKS, nginx ingress controller (with helm), ACR and to grant necessary permissions
 - **`charts/`**: Contains the Helm chart used for deploying the API to the Kubernetes cluster. Note: it was scaffolded by `helm create` and adjusted where necessary.
 - **`src/`**: API source code in Go.
 - **`scripts/`**: Deployment scripts, including `check-deployment.sh`, which ensures the deployment was successful and the service is healthy.
@@ -56,7 +56,7 @@ This project contains a simple Go-based API designed to check the primality of a
 
 > с пробросом к нему портов (http, https пару кастомных TCP- портов, желательно через ингресс)
 
-Since we're using ingress, only http and https ports are forwarded. To be discussed.
+Since we're using ingress, only http and https ports are forwarded in this solution. To be discussed.
 
 > Развернуть этот сервис (сервисы) в кубернетес кластере (любом, желательно Azure)
 

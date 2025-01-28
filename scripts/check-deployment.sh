@@ -16,7 +16,7 @@ check_app_health() {
 
 while [ $ATTEMPTS -lt 30 ]; do
 
-    if check_helm_status && check_port; then
+    if check_helm_status && check_app_health; then
         echo "Helm status is 'deployed' and /healthz returned OK."
         exit 0
     fi
