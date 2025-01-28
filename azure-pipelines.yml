@@ -32,6 +32,7 @@ steps:
     repository: $(imageName)
     dockerfile: './src/prime-api/Dockerfile'
     tags: $(tag)
+    arguments: --build-arg VERSION=$(tag)
 
 - task: Kubernetes@1
   displayName: Login to Kubernetes
