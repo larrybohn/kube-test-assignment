@@ -10,7 +10,7 @@ check_helm_status() {
 }
 
 check_app_health() {
-    curl -I http://kube-test-assignment-cluster.eastus.cloudapp.azure.com/healthz
+    curl -I -f http://kube-test-assignment-cluster.eastus.cloudapp.azure.com/healthz
     return $?
 }
 
