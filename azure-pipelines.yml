@@ -20,7 +20,7 @@ variables:
   resourceGroup: 'cluster'
   subscriptionId: 'e07f1145-7d1f-40d9-9d15-eda1488aef3a'
   SIMULATE_FAILURE: ${{ parameters.simulateFailure }}
-  version: "1.0.0+build$(Build.BuildId)"
+  tag: "$(Build.BuildId)"
 
 steps:
 
@@ -31,7 +31,7 @@ steps:
     containerRegistry: $(acrName)
     repository: $(imageName)
     dockerfile: './src/prime-api/Dockerfile'
-    tags: $(version)
+    tags: $(tag)
 
 - task: Kubernetes@1
   displayName: Login to Kubernetes
@@ -54,7 +54,7 @@ steps:
     chartType: 'FilePath'
     chartPath: ./charts/prime-api
     overrideValues: |
-      image.tag=$(version)
+      image.tag=$(tag)
       envVariables.SIMULATE_FAILURE=$(SIMULATE_FAILURE)
     waitForCompletion: false
     install: true
