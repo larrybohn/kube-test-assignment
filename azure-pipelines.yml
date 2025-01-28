@@ -25,14 +25,22 @@ variables:
 steps:
 
 - task: Docker@2
-  displayName: 'Build and Push Docker Image'
+  displayName: 'Build Docker image'
   inputs:
-    command: 'buildAndPush'
+    command: 'build'
     containerRegistry: $(acrName)
     repository: $(imageName)
     dockerfile: './src/prime-api/Dockerfile'
     tags: $(tag)
     arguments: --build-arg VERSION=$(tag)
+
+- task: Docker@2
+  displayName: 'Push Docker image'
+  inputs:
+    command: 'push'
+    containerRegistry: $(acrName)
+    repository: $(imageName)
+    tags: $(tag)
 
 - task: Kubernetes@1
   displayName: Login to Kubernetes

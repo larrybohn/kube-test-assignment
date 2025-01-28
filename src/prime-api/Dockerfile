@@ -1,4 +1,5 @@
 FROM golang:1.23 AS build-stage
+ARG VERSION
 
 COPY go.mod ./
 COPY *.go ./
