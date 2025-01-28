@@ -11,7 +11,7 @@ parameters:
     values:
       - 'true'
       - 'false'
-    displayName: "Set to 'true' to hang the app at startup"
+    displayName: "Simulate Failure: set to 'true' to hang the app at startup"
 
 variables:
   imageName: 'prime-api'
