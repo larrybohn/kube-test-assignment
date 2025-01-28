@@ -2,12 +2,15 @@
 
 ## Overview
 
-This project contains a simple Go-based API designed to check the primality of arbitrary numbers. It is deployed on an Azure Kubernetes Service cluster using Terraform to manage infrastructure, Helm for application deployment, and Azure DevOps for CI/CD pipelines. Container images are stored in ACR.
-
+This project contains a simple API written in Go designed to check the primality of arbitrary numbers.
+It is deployed on an Azure Kubernetes Service cluster with Helm from an Azure DevOps pipeline.
+Terraform is used to provision the necessary infrastructure.
+Container images are stored in ACR.
+Failure simulation is implemented to test the system’s rollback capability.
 
 ## Directory Structure
 
-- **`terraform/`**: Contains Terraform files required to provision AKS, nginx ingress controller (with helm), ACR and to grant necessary permissions
+- **`terraform/`**: Contains Terraform files required to provision AKS, nginx ingress controller (with Helm), ACR and to grant necessary permissions
 - **`charts/`**: Contains the Helm chart used for deploying the API to the Kubernetes cluster. Note: it was scaffolded by `helm create` and adjusted where necessary.
 - **`src/`**: API source code in Go.
 - **`scripts/`**: Deployment scripts, including `check-deployment.sh`, which ensures the deployment was successful and the service is healthy.
@@ -27,7 +30,7 @@ This project contains a simple Go-based API designed to check the primality of a
 
 4. Set up an Azure DevOps account with connections to this repository, Azure subscription and ACR
 
-5. Run the pipeline. Use `Simulate Failure` parameter to simulate app freezing before starting listening on the port, if needed.
+5. Run the pipeline. Use `Simulate Failure` parameter to simulate app freezing before starting listening on the port, if needed. When failure simulation is disabled, the app still has a 15-second sleep before listening on the port so that the `Check helm is deployed and port is open` step can perform a few checks.
 
 ## API
 
@@ -60,7 +63,7 @@ Since we're using ingress, only http and https ports are forwarded in this solut
 
 > Развернуть этот сервис (сервисы) в кубернетес кластере (любом, желательно Azure)
 
-[kube-test-assignment-cluster.eastus.cloudapp.azure.com](https://kube-test-assignment-cluster.eastus.cloudapp.azure.com/version) (might be offline, because the cluster is deallocated to save infrastructure costs)
+[kube-test-assignment-cluster.eastus.cloudapp.azure.com](https://kube-test-assignment-cluster.eastus.cloudapp.azure.com/version) (might be offline, because the cluster is deallocated to save on infrastructure costs)
 
 > сделать хельмом
 
@@ -76,7 +79,7 @@ https://dev.azure.com/andreitestorg/kube-test-assignment (not public)
 
 > (порты доступны , хельм релиз в статусе деплойд итд, чтобы pending статус например чекать и откатывать релиз обратно, если что-то не так, на предыдущую версию)
 
-We could've relied on readinessProbe for this, but since writing custom script was requested, helm release status is checked in check-deployment.sh. Instead of checking if ports are open, /healthz endpoint is called for the purpose as a simpler option compared to checking port from inside the cluster.
+We could've relied on readinessProbe for this, but since writing a custom script was requested, helm release status is checked in check-deployment.sh. Instead of checking if ports are open, /healthz endpoint is called for this purpose as a simpler option compared to checking port from inside the cluster.
 
 > Создать успешные накаты и неуспешные (искусствено каким-либо образом симулировать это)
 
