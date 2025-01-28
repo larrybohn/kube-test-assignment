@@ -9,9 +9,9 @@ resource "helm_release" "nginx_ingress" {
   namespace  = "nginx-ingress"
   repository = "oci://ghcr.io/nginx/charts/"
   chart      = "nginx-ingress"
-  
+
   set {
-    name = "controller.service.externalTrafficPolicy"
+    name  = "controller.service.externalTrafficPolicy"
     value = "Local"
   }
 

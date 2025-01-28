@@ -15,10 +15,12 @@ parameters:
 
 variables:
   appName: 'prime-api'
+  kubeNamespace: 'default'
   acrName: 'andreikubetestassignmentacr.azurecr.io'
+  clusterEndpoint: 'kube-test-assignment-cluster.eastus.cloudapp.azure.com'
   aksCluster: 'aks-cluster'
   resourceGroup: 'cluster'
-  subscriptionId: 'e07f1145-7d1f-40d9-9d15-eda1488aef3a'
+  azureSubscriptionConnectionId: $(AZURESERVICECONNECTIONID)
   SIMULATE_FAILURE: ${{ parameters.simulateFailure }}
   tag: "$(Build.BuildId)"
 
@@ -46,7 +48,7 @@ steps:
   displayName: Login to Kubernetes
   inputs:
     connectionType: 'Azure Resource Manager'
-    azureSubscriptionEndpoint: $(subscriptionId)
+    azureSubscriptionEndpoint: $(azureSubscriptionConnectionId)
     azureResourceGroup: $(resourceGroup)
     kubernetesCluster: $(aksCluster)
     command: login
@@ -54,15 +56,16 @@ steps:
 - task: HelmDeploy@1
   displayName: 'Deploy Helm chart'
   inputs:
-    azureSubscription: $(subscriptionId)
+    azureSubscription: $(azureSubscriptionConnectionId)
     azureResourceGroup: $(resourceGroup)
     kubernetesCluster: $(aksCluster)
-    namespace: default
+    namespace: $(kubeNamespace)
     command: 'upgrade'
     releaseName: $(appName)
     chartType: 'FilePath'
     chartPath: ./charts/$(appName)
     overrideValues: |
+      image.repository=$(acrName)/$(appName)
       image.tag=$(tag)
       envVariables.SIMULATE_FAILURE=$(SIMULATE_FAILURE)
     waitForCompletion: false
@@ -75,4 +78,4 @@ steps:
 
 - script: |
     echo 'App deployed'
-    echo 'Follow http://kube-test-assignment-cluster.eastus.cloudapp.azure.com/version'
+    echo 'Follow http://$(clusterEndpoint)/version'

@@ -26,7 +26,7 @@ Failure simulation is implemented to test the system’s rollback capability.
     tenant_id       = "<your Azure tenant id>"
     ```
 
-3. Run `cd terraform && terraform apply`
+3. Run `az login && cd terraform && terraform apply`
 
 4. Set up an Azure DevOps account with connections to this repository, Azure subscription and ACR
 
