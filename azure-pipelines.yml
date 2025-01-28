@@ -20,6 +20,7 @@ variables:
   resourceGroup: 'cluster'
   subscriptionId: 'e07f1145-7d1f-40d9-9d15-eda1488aef3a'
   SIMULATE_FAILURE: ${{ parameters.simulateFailure }}
+  version: "1.0.0+build$(Build.BuildId)"
 
 steps:
 
@@ -30,7 +31,7 @@ steps:
     containerRegistry: $(acrName)
     repository: $(imageName)
     dockerfile: './src/prime-api/Dockerfile'
-    tags: $(Build.BuildId)
+    tags: $(version)
 
 - task: Kubernetes@1
   displayName: Login to Kubernetes
@@ -53,7 +54,7 @@ steps:
     chartType: 'FilePath'
     chartPath: ./charts/prime-api
     overrideValues: |
-      image.tag=$(Build.BuildId)
+      image.tag=$(version)
       envVariables.SIMULATE_FAILURE=$(SIMULATE_FAILURE)
     waitForCompletion: false
     install: true
@@ -62,3 +63,7 @@ steps:
     chmod +x ./scripts/check-deployment.sh
     ./scripts/check-deployment.sh
   displayName: 'Check helm is deployed and port is open'
+
+- script: |
+    echo 'App deployed'
+    echo 'Follow http://kube-test-assignment-cluster.eastus.cloudapp.azure.com/version'

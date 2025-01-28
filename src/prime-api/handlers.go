@@ -2,6 +2,7 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 	"strconv"
 	"strings"
@@ -36,4 +37,8 @@ func nextPrimeHandler(w http.ResponseWriter, r *http.Request) {
 
 func healthCheckHandler(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusOK)
+}
+
+func versionHandler(w http.ResponseWriter, r *http.Request) {
+	fmt.Fprintf(w, "Version: %s", version)
 }

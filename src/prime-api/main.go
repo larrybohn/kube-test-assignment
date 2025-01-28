@@ -9,10 +9,15 @@ import (
 	"time"
 )
 
+var version string
+
 // Main function to set up routes and start the server
 func main() {
+	fmt.Printf("Starting app version %s...\n", version)
+
 	http.HandleFunc("/is-prime/", isPrimeHandler)
 	http.HandleFunc("/next-prime/", nextPrimeHandler)
+	http.HandleFunc("/version", versionHandler)
 	http.HandleFunc("/healthz", healthCheckHandler)
 
 	//hang indefinitely if requested to simulate failure

@@ -1,23 +1,34 @@
-# Default values for prime-api.
-# This is a YAML-formatted file.
-# Declare variables to be passed into your templates.
-
-# This will set the replicaset count more information can be found here: https://kubernetes.io/docs/concepts/workloads/controllers/replicaset/
 replicaCount: 1
 
-# This sets the container image more information can be found here: https://kubernetes.io/docs/concepts/containers/images/
 image:
   repository: andreikubetestassignmentacr.azurecr.io/prime-api
-  # This sets the pull policy for images.
   pullPolicy: IfNotPresent
-  # Overrides the image tag whose default is the chart appVersion.
-  tag: "latest"
 
-# This is for the secrets for pulling an image from a private repository more information can be found here: https://kubernetes.io/docs/tasks/configure-pod-container/pull-image-private-registry/
 imagePullSecrets: []
-# This is to override the chart name.
+
 nameOverride: ""
 fullnameOverride: ""
+
+ingress:
+  enabled: true
+  className: "nginx"
+  annotations: {}
+  hosts:
+    - host: kube-test-assignment-cluster.eastus.cloudapp.azure.com
+      paths:
+        - path: /
+          pathType: ImplementationSpecific
+          backend:
+  tls: []
+
+service:
+  type: ClusterIP
+  port: 8080
+
+envVariables:
+  - SIMULATE_FAILURE: "false"
+
+
 
 # This section builds out the service account more information can be found here: https://kubernetes.io/docs/concepts/security/service-accounts/
 serviceAccount:
@@ -50,29 +61,6 @@ securityContext: {}
   # runAsUser: 1000
 
 # This is for setting up a service more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/
-service:
-  # This sets the service type more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#publishing-services-service-types
-  type: ClusterIP
-  # This sets the ports more information can be found here: https://kubernetes.io/docs/concepts/services-networking/service/#field-spec-ports
-  port: 8080
-
-# This block is for setting up the ingress for more information can be found here: https://kubernetes.io/docs/concepts/services-networking/ingress/
-ingress:
-  enabled: true
-  className: "nginx"
-  annotations: {}
-    # kubernetes.io/ingress.class: nginx
-    # kubernetes.io/tls-acme: "true"
-  hosts:
-    - host: kube-test-assignment-cluster.eastus.cloudapp.azure.com
-      paths:
-        - path: /
-          pathType: ImplementationSpecific
-          backend:
-  tls: []
-
-envVariables:
-  - SIMULATE_FAILURE: "false"
 
 resources: {}
   # We usually recommend not to specify default resources and to leave this as a conscious
