@@ -15,6 +15,7 @@ ingress:
   annotations:
     cert-manager.io/issuer: "letsencrypt-prod"
     acme.cert-manager.io/http01-edit-in-place: "true"
+    ingress.kubernetes.io/ssl-redirect: "false"
   hosts:
     - host: kube-test-assignment-cluster.eastus.cloudapp.azure.com
       paths:
